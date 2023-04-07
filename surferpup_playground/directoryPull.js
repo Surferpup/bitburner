@@ -25,8 +25,8 @@ export async function main(ns) {
 */
 export function getFileList(ns, server, grep, root_only) {
 	if (server == "") { server = "home" }
-	if (match = "") { match = "." }
-	let directory_list = ns.ls(server, match)
+	if (grep = "") { grep = "." }
+	let directory_list = ns.ls(server, grep)
 	for (const filename of directory_list) {
 		if (((root_only) && (filename.startsWith("/"))) ||
 			((!filename.includes(".js")) && (!filename.includes(".txt")))) 
