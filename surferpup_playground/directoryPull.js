@@ -16,7 +16,8 @@ export async function main(ns) {
 export function getFileList(ns, server, dir, root_only) {
 	let directory_list = ns.ls(server, dir)
 	for (const filename of directory_list) {
-		if ((root_only) && (filename.startsWith("/"))) {
+		if (((root_only) && (filename.startsWith("/"))) ||
+		    (( !filename.includes(".js")) && ( !filename.includes(".txt")) {
 			ns.tprintf(`SKIPPED ${filename}`)
 			continue;
 		} // end if
