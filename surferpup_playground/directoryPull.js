@@ -8,13 +8,25 @@ export async function main(ns) {
 			for (const property in DIRS) {
 				ns.tprintf(`${property}: ${DIRS[property]}`)
 			} // end for
-			getFileList(ns, "home", ns.args[1], ns.args[2]);
+			getFileList(ns, ns.args[1], ns.args[2], ns.args[3]);
 		// end case
 	} // end switch
 }// end function main(ns)
 
-export function getFileList(ns, server, dir, root_only) {
-	let directory_list = ns.ls(server, dir)
+/*
+	This function returns a list of copyable files from a server.
+	Copyable files include .js and .txt files only.
+	
+	Requires: server    -- the name of the server to run the
+			       directory command
+	
+	Optional: grep      -- what to grep for ("." is everything)
+		  root_only -- use true if only want root level files
+*/
+export function getFileList(ns, server, grep, root_only) {
+	if (server == "") { server = "home" }
+	if (match = "") { match = "." }
+	let directory_list = ns.ls(server, match)
 	for (const filename of directory_list) {
 		if (((root_only) && (filename.startsWith("/"))) ||
 			((!filename.includes(".js")) && (!filename.includes(".txt")))) 
