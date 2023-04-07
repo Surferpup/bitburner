@@ -17,11 +17,11 @@ export async function main(ns) {
 	This function returns a list of copyable files from a server.
 	Copyable files include .js and .txt files only.
 	
-	Requires: server    -- the name of the server to run the
-			       directory command
+	Requires: 	server    	-- 	the name of the server to run the
+								directory command
 	
-	Optional: grep      -- what to grep for ("." is everything)
-		  root_only -- use true if only want root level files
+	Optional: 	grep      	--	what to grep for ("." is everything)
+				root_only 	--	use true if only want root level files
 */
 export function getFileList(ns, server, grep, root_only) {
 	if (server == "") { server = "home" }
@@ -29,8 +29,7 @@ export function getFileList(ns, server, grep, root_only) {
 	let directory_list = ns.ls(server, grep)
 	for (const filename of directory_list) {
 		if (((root_only) && (filename.startsWith("/"))) ||
-			((!filename.includes(".js")) && (!filename.includes(".txt")))) 
-		{
+			((!filename.includes(".js")) && (!filename.includes(".txt")))) {
 			ns.tprintf(`SKIPPED ${filename}`)
 			continue;
 		} // end if
