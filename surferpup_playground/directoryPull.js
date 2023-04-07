@@ -7,17 +7,22 @@ export async function main(ns) {
 		case "export":
 			for( const property in DIRS ) {
 				ns.tprintf(`${property}: ${DIRS[property]}`)
-			}
-	getSparky(ns,"home",ns.args[1],true);
+			} // end for
+			getFileList(ns,"home",ns.args[1],ns.args[2]);
+		// end case
 	} // end switch
 }// end function main(ns)
 
-function getSparky(ns,server,dir,all) {
-	let list = ns.ls(server,dir)
-	for (const t of list) {
-		if ((! all)  && (t.startsWith("/"))) {
+export function getFileList(ns,server,dir,root_only) {
+	let directory_list = ns.ls(server,dir)
+	for (const filename of directory_list) {
+		if ((root_only)  && (filename.startsWith("/"))) {
 			continue;
-		}
-		ns.tprintf(t)
+		} // end if
+		if (filename.startsWith("/")) {
+			ns.tprintf(filename.slice(1))
+		} else {
+			ns.tprintf(filename)
+		} // end if .. else
 	} // end for
-} // end function getSparky
+} // end function getFileList
