@@ -20,7 +20,7 @@ export async function main(ns) {
 function importBrain(ns) {
     var royalJellyHost = "home" //needs to be on home to get the scripts
     ns.exec(HiveDir + "royalJelly.js", royalJellyHost, 1)
-} end function importBrain
+} //end function importBrain
 
 function deployToHive(ns, hiveManagementHost="home")
 {
