@@ -1,5 +1,7 @@
 /** @param {NS} ns */
 
+/* ADDED RESERVE_PORT and ReservePortHandle, also modified getAvailableFunds*/
+//import { RESERVE_PORT } from "scripts/setStockReserve"
 export const RESERVE_PORT = 5 // The port to publish the reserve for other programs to read
 
 //let global,ReserveFunds;
@@ -93,7 +95,7 @@ export async function main(ns) {
 					ns.tprintf(`Reserve funds are currently set to ${ReserveFunds}.`)
 				}
 				return true;
-			//end case reservef
+			//end case reserve
 			default:
 				ns.tprintf("Useage: Options: check | reserve <optional amount> | sell <required amount>")
 				return true;
@@ -154,30 +156,50 @@ function checkApis(ns, logging = false) {
 	if (ns.stock.has4SDataTIXAPI()) {
 		FORECAST = true;
 	} //end if ns.stock.has4SDataTIXAPI()
-	var availableFunds = getAvailableFunds(ns);
-	//Don't buy the api unless we have at least twice what it costs floating around.
-	var apiCost = 1 * 10 ** 9; //1 billion dollars : Just the cost it was in node 1.
-	var reservedFunds = apiCost * 2; // Wait until you have at least 2 times the cost.
-	if (availableFunds > reservedFunds) {
-		if (!ns.stock.purchase4SMarketData()) {
-			msg = "This script will attempt to proceed without the 4S Market Data, but it'd really help.";
-			if (logging) { ns.tprint(msg); }
-		} //end if !ns.stock.purchase4sMarketData
-	} //end if availableFunds < reserveFundsd
 
-	availableFunds = getAvailableFunds(ns); //update this, may have bought something.
-	//Don't buy the api unless we have at least twice what it costs floating around.
-	apiCost = 25 * 10 ** 9; //25 billion dollars : Just the cost it was in bitnode 1.
-	reservedFunds = apiCost * 2; //Save 2x the cost before you buy the api.
-	if (availableFunds > reservedFunds) {
-		if (!ns.stock.purchase4SMarketDataTixApi()) {
-			msg = "This script will attempt to proceed without the 4S Market Data TIX API access, but it'd really help.";
-			if (logging) { ns.tprint(msg); }
-		} //end if !ns.stock.purchase4SMarketDataTixApi()
-		return true;
-	} //end if availableFunds > reserveFunds
+
+	if (!ns.stock.has4SData()) {
+		var apiCost = 1 * 10 ** 9; //1 billion dollars : Just the cost it was in node 1.
+		var reservedFunds = apiCost * 10; // The player 4s access is theoretically not helpful, so wait until it doesn't hurt at all.
+		ensureValue(ns, reservedFunds)
+		var availableFunds = getAvailableFunds(ns);
+		if (availableFunds > reservedFunds) {
+			if (!ns.stock.purchase4SMarketData()) {
+				msg = "This script will attempt to proceed without the 4S Market Data, but it'd really help.";
+				if (logging) { ns.tprint(msg); }
+			} //end if !ns.stock.purchase4sMarketData
+		} //end if availableFunds < reserveFundsd
+	} //end if has4SData 
+
+
+	if (!FORECAST) {
+		var apiCost = 25 * 10 ** 9; //25 billion dollars : Just the cost it was in bitnode 1.
+		var reservedFunds = apiCost * 2; //Save 2x the cost before you buy the api.  This is helpful for the algorithm, so buy it even if it hurts some, but still keep a reserve.
+		ensureValue(ns, reservedFunds)
+		availableFunds = getAvailableFunds(ns); //update this, may have bought something.
+		if (availableFunds > reservedFunds) {
+			if (!ns.stock.purchase4SMarketDataTixApi()) {
+				msg = "This script will attempt to proceed without the 4S Market Data TIX API access, but it'd really help.";
+				if (logging) { ns.tprint(msg); }
+			} //end if !ns.stock.purchase4SMarketDataTixApi()
+			return true;
+		} //end if availableFunds > reserveFunds
+	} //end if !FORECAST
 	return true;
 } //end checkApis
+//This function will return true if it manages to give you at least value in funds and false otherwise.
+//It will sell stocks if you have enough stocks to generate at least value, and not otherwise.
+function ensureValue(ns, value) {
+	var availableFunds = getAvailableFunds(ns);
+	if (availableFunds > value) { return true }
+	var totalValue = checkPortfolio(ns, false, false)
+	if (totalValue > value) {
+		sellPosition(ns, 1) //will sell all stocks
+	}
+	availableFunds = getAvailableFunds(ns); //Check again, we may have sold
+	if (availableFunds > value) { return true }
+	else { return false }
+}
 //This function is designed to sell stonks when it is time to do so.
 //They use a sellThreshold that is passed in (generally slightly below 0.5 but not much)
 // as well as an estimator that is passed in, which for a given stock estimator[stockSymbol]
@@ -495,7 +517,7 @@ async function sortStonks(ns, estimator, logging = false) {
 } //function sortStonks
 
 //This function calculates how much money you would gain if you sold your whole portfolio long right now.
-function checkPortfolio(ns, logging = false) {
+function checkPortfolio(ns, logging = false, printResult = true) {
 	if (logging) { ns.tprint("Check Portfolio called."); }
 	var totalValue = 0;
 	var stonks = ns.stock.getSymbols();
@@ -514,7 +536,7 @@ function checkPortfolio(ns, logging = false) {
 		} //end if SHORTS
 	} // end for i < stonks.length
 	const formatted = ns.nFormat(totalValue, "$0.000a");
-	ns.tprint("Total Invested: " + formatted);
+	if (printResult) {ns.tprint("Total Invested: " + formatted)}
 	return totalValue;
 } //checkPortfolio
 
