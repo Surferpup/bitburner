@@ -56,3 +56,4 @@ export async function main(ns) {
 		firstTime = false;
 		await ns.sleep(waitTime * 1000);
 	}//end while true
+	//end hiveManagement.js
