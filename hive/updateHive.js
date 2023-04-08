@@ -3,7 +3,7 @@
 export async function main(ns) {
     var newServerMemory = 212 //an initial target. Could be anything.
     var targetMemory = 2 ** 7; //2  20 is cap I believe.  We will buy and double our way up to this until we reach it.
-    newServerMemory = 2; // need to double our initial size
+    newServerMemory = 2 // need to double our initial size
     while (newServerMemory < targetMemory){
 
         await upgradeHive(ns, newServerMemory);
