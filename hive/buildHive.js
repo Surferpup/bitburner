@@ -1,4 +1,8 @@
-let QueenName = "Queen"; //Name for the "Queen" or command and control server
+/** @param {NS} ns */
+// File buildHive.js
+
+const QueenName = "Queen"; //Name for the "Queen" or command and control server
+
 export async function main(ns) {
     var newServerMemory = null
 
@@ -43,3 +47,4 @@ export async function main(ns) {
 
 
 } //end main
+//end file buildHive.js
