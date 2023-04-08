@@ -1,4 +1,7 @@
-let QueenName = "Queen"
+//file hiveManagement.js
+/** @param {NS} ns */
+
+const QueenName = "Queen"
 export async function main(ns) {
 	
 	var targetServer = "joesguns";
@@ -56,4 +59,5 @@ export async function main(ns) {
 		firstTime = false;
 		await ns.sleep(waitTime * 1000);
 	}//end while true
-	//end hiveManagement.js
+} //end function main
+//end file hiveManagement.js
