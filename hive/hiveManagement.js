@@ -1,63 +1,52 @@
 //file hiveManagement.js
 /** @param {NS} ns */
 
-const QueenName = "Queen"
+let QueenName = "Queen"
+let HiveDir = "/hive/"
+let HackDir = "/hacks/"
+let ScriptDir = "/scripts/"
+
 export async function main(ns) {
-	
-	var targetServer = "joesguns";
-	var scriptToRun = "/hacks/pufferFish.js";
-	var puff = "/scripts/sharingIsCaring.js";
-	var requiredFiles = ["/hacks/fluffer.js", "/hacks/pufferFish.js", "/scripts/sharingIsCaring.js", "/hacks/BusinessBusinessBusiness.js",
-	 "/hacks/genHack.js","/hacks/enervate.js", "/hacks/fluffer2.js", "/hacks/pumpStock.js", "/hacks/dumpStock.js",
-	 "/hacks/inquiryHack.js"];
-	var queenRequiredFiles = ["/scripts/runHacknet.js", "/scripts/stonks.js", "/scripts/hiveManagement.js", "/scripts/buildHive.js",
-														"/scripts/supahaka.js", "hackServer.js","/scripts/setStockReserve.js"]
-	if (ns.args.length > 0){
-		puff = ns.args[0];
-	}
-	if (ns.args.length > 1){
-		targetServer = ns.args[1];
-	}
+    importBrain(ns)
 
-	var msg = "no_msg_specified";
-	var baseName = "hive";
-	var waitTime = 5; //Time to sleep per loop to avoid causing ui lag.
-
-	var firstTime = true; //The first time we run, we want to free up all space on each server.
-	while (true)
-	{
-		//For each server, execute the script.
-		var myServers = ns.getPurchasedServers();
-		for (var i = 0; i < myServers.length; i++) 
-		{
-			var server = myServers[i];
-			var serverName = null;
-			if (i == 0) {
-				serverName = QueenName; //Defined in buildHive as well, or was at one time.
-			}
-			else
-			{
-				serverName = baseName + i;
-			}
-			
-			ns.renamePurchasedServer(server, serverName);
-			for (var j=0; j < requiredFiles.length; j++){
-				ns.scp(requiredFiles[j], serverName);
-			}
-			if (serverName == QueenName) {
-				for (var j=0; j < queenRequiredFiles.length; j++){
-					ns.scp(queenRequiredFiles[j], serverName);
-				}
-			}
-			if (firstTime && (serverName != QueenName)) {
-				await ns.killall(serverName); //Free up all that space
-			}
-			if (serverName != QueenName){
-				await ns.exec(scriptToRun, serverName, 1, puff, targetServer);
-			}
-		} // end for i < myServers.length
-		firstTime = false;
-		await ns.sleep(waitTime * 1000);
-	}//end while true
+    deployToHive(ns);
+    //Get supahaka going
+    ns.exec(HackDir + "supahaka.js", "home", 1)
+    //var player = ns.getPlayer();
 } //end function main
+
+//This just imports all the scripts we need onto the queen server.
+//If the queen server doesn't exist, it'll try to make one.
+function importBrain(ns) {
+    var royalJellyHost = "home" //needs to be on home to get the scripts
+    ns.exec(HiveDir + "royalJelly.js", royalJellyHost, 1)
+} end function importBrain
+
+function deployToHive(ns, hiveManagementHost="home")
+{
+
+    var puff = HackDir + "inquiryHack.js";
+    if (ns.args.length > 0){
+        puff = ns.args[0];
+    }
+    var targetServer = "joesguns";
+    if (ns.args.length > 1){
+        targetServer = ns.args[1];
+    }
+
+    ns.scriptKill(HiveDir + "hiveManagement.js", hiveManagementHost);
+    ns.exec(HiveDir + "hiveManagement.js", hiveManagementHost, 1, puff, targetServer);
+
+} //end function deployToHive
+
+//Fire up a copy of the script if it isn't up, ignore it if it is.
+function maintain(ns, scriptName, targetServer, scriptArgs)
+{
+    if (targetServer == null) {targetServer = "home";}
+    //if (scriptArgs == null) {scriptArgs = [];}
+    if (!ns.isRunning(scriptName, targetServer)) {
+        ns.exec(scriptName, targetServer, scriptArgs);
+    }
+} //end function maintain
+
 //end file hiveManagement.js
