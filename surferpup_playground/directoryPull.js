@@ -5,38 +5,45 @@ export const DIRS = { HIVE: "hive", HACKS: "hacks", STOCKS: "stocks", UTILS: "ut
 export async function main(ns) {
 	switch (ns.args[0]) {
 		case "export":
-			for (const property in DIRS) {
-				ns.tprintf(`${property}: ${DIRS[property]}`)
-			} // end for
-			getFileList(ns, ns.args[1], ns.args[2], ns.args[3]);
+			
+			for (const filename of getFileList(ns, ns.args[1], ns.args[2], ns.args[3], false)) {
+				ns.tprintf(filename)
+			} //end for
+			
 		// end case
 	} // end switch
 }// end function main(ns)
 
-/*
+/* function getFileList(ns, server, grep, root_only, debug)
+
 	This function returns a list of copyable files from a server.
 	Copyable files include .js and .txt files only.
 	
-	Requires: 	server    	-- 	the name of the server to run the
+	Requires: 	server    	-- 	the name of the server to run thef
 								directory command
 	
 	Optional: 	grep      	--	what to grep for ("." is everything)
 				root_only 	--	use true if only want root level files
+				debug		--	use true only if you want terminal output for debugging
 */
-export function getFileList(ns, server, grep, root_only) {
-	if (server == "") { server = "home" }
-	if (grep = "") { grep = "." }
+export function getFileList(ns, server, grep, root_only, debug) {
+	let filelist = []
+	if ( ! server ) { server = "home" }
+	if ( ! grep ) { grep = "." }
 	let directory_list = ns.ls(server, grep)
 	for (const filename of directory_list) {
 		if (((root_only) && (filename.startsWith("/"))) ||
 			((!filename.includes(".js")) && (!filename.includes(".txt")))) {
-			ns.tprintf(`SKIPPED ${filename}`)
+			if (debug) ns.tprintf(`SKIPPED ${filename}`)
 			continue;
 		} // end if
 		if (filename.startsWith("/")) {
-			ns.tprintf(filename.slice(1))
+			if (debug) ns.tprintf(filename.slice(1))
+			filelist.push(filename.slice(1))
 		} else {
-			ns.tprintf(filename)
+			if (debug) ns.tprintf(filename)
+			filelist.push(filename)
 		} // end if .. else
 	} // end for
+	return filelist
 } // end function getFileList
