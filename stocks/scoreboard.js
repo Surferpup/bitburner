@@ -19,7 +19,6 @@ export async function main(ns) {
             this.marketprice = 0 // current market price
             this.updatePosition() //get position and sale info
             
-
             // ._tostring is used to format each line of a stock on the log output.
             this._tostring = "`${TextTransforms.apply((this.tix_symbol).padEnd(9,' '),[table_text])}" +
                 "${TextTransforms.apply(ns.nFormat(this.position[0],\"0.000a\").padStart(12,' '),[table_text])}" +
@@ -28,7 +27,6 @@ export async function main(ns) {
                 "${TextTransforms.apply(ns.nFormat(this.position[2],\"0.000a\").padStart(12,' '),[table_text])}" +
                 "${TextTransforms.apply(ns.nFormat(this.position[9],\"0.000a\").padStart(12,' '),[table_text])}" +
                 "${TextTransforms.apply(ns.nFormat(this.position[10],\"0.000a\").padStart(12,' '),[this.position[11]])}`"
-
         }
         
         getLastPosition() {
@@ -76,7 +74,7 @@ export async function main(ns) {
             let stock_symbols = ns.stock.getSymbols()
             let first = true
             for (let stock_symbol of stock_symbols) {
-                const position = ns.stock.getPosition(stock_symbol)
+                let position = ns.stock.getPosition(stock_symbol)
                 if ((!position[0]) && (!position[2])) // this stock is not in portfolio, so skip it
                 {
                     continue
@@ -91,14 +89,16 @@ export async function main(ns) {
                         ns.printf("------------------------------------------------------------------------------------")
                     }
                     let stock = new Stock(stock_symbol) // get all data on stock
-                    totals[0] += position[4]  // total paid long
-                    totals[1] += position[5]  // market price * # shares long
-                    totals[2] += position[6]  // total return long
-                    totals[3] += position[8]  // total paid short
-                    totals[4] += position[9]  // market price * # shares short
-                    totals[5] += position[10] // total return short
 
-                    ns.printf(stock.toString())
+                    //accumulate totals
+                    totals[0] += stock.position[4]  // total paid long
+                    totals[1] += stock.position[5]  // market price * # shares long
+                    totals[2] += stock.position[6]  // total return long
+                    totals[3] += stock.position[8]  // total paid short
+                    totals[4] += stock.position[9]  // market price * # shares short
+                    totals[5] += stock.position[10] // total return short
+
+                    ns.printf(stock.toString()) // print stock to log
                 } // end if
             }; //end for
             if (!first) // stocks have been printed so now print table totals and footers
@@ -123,8 +123,9 @@ export async function main(ns) {
                 ns.printf("".padEnd(9, " ") + (("------------ ".padStart(12)).repeat(6)))
 
                 // overall returns
-                ns.printf("  TOTAL INVESTED  ....".padEnd(15) + TextTransforms.apply(ns.nFormat(totals[0] + totals[3], "0.000a").padStart(12, ' '), [table_text]) +
-                    "  ....  TOTAL RETURN  ====>".padStart(24) + TextTransforms.apply(ns.nFormat(overallReturn, "0.000a").padStart(12, ' '), [overallReturnColor]) + "  <====")
+                ns.printf ( "  TOTAL INVESTED  ....".padEnd(15) + TextTransforms.apply(ns.nFormat(totals[0] + totals[3], "0.000a").padStart(12, ' '), [table_text]) +
+                            "  ....  TOTAL RETURN  ====>".padStart(24) + TextTransforms.apply(ns.nFormat(overallReturn, "0.000a").padStart(12, ' '), [overallReturnColor]) + "  <====")
+
                 ns.printf(("-".repeat(78)).padStart(80))
             } //end if
             await ns.sleep(1000); // sleep and then do it all again
