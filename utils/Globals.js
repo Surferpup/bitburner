@@ -1,3 +1,8 @@
+
+/** @param { NS } ns */
+
+//file Globals.js
+
 /** File to keep global values for all scripts */
 /**
  * @const { obj } DIRS - Default Directory paths for scripts
@@ -16,7 +21,7 @@ export const DIRS = { HIVE: "hive", HACKS: "hacks", STOCKS: "stocks", UTILS: "ut
  *
  * @see getFileList for details
  **/
-export async function main(ns) {
+export async function main( ns ) {
     const switchCase = (ns.args[0]) ? ns.args[0] : "export";
     switch (switchCase) {
         case "export":
@@ -28,6 +33,7 @@ export async function main(ns) {
         // end case
     } // end switch
 } // end function main(ns)
+
 /**
  * Returns a directory listing of files on a server (only *.js and *.txt files are returned)
  * @param { NS } ns  Netscript Namespace
