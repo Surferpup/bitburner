@@ -1,6 +1,6 @@
 /** @param { NS } ns */
 
-import { getFileList } from "/bitburner/utils/Globals"
+import { getFileList } from "/utils/Globals"
 //export { getFileList } ;
 
 /** WIll wipe all files fom home server */
