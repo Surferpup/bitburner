@@ -128,6 +128,10 @@ export async function main(ns) {
 
                 ns.printf(("-".repeat(78)).padStart(80))
             } //end if
+
+            // prompt section
+            //let result = await ns.prompt('Exit Script?')
+            // if (result) { break }
             await ns.sleep(1000); // sleep and then do it all again
         } //end while
     } //end try
