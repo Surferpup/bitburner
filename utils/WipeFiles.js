@@ -1,12 +1,14 @@
+// file WipeFiles.js
+// Wipes all *.js and *.txt from server.
+
 /** @param { NS } ns */
 
 import { getFileList } from "/utils/Globals"
-//export { getFileList } ;
 
 /** WIll wipe all files fom home server */
 /** @param { NS } ns **/
 export async function main(ns) {
-    const result =  ns.prompt("This will wipe all files from the server (except for this utility -- are you sure you want to do this?")
+    const result =  ns.prompt("This will wipe ALL files from the server (except for this utility)\n -- are you sure you want to do this?")
 
     if (result) {
         
