@@ -45,7 +45,7 @@ export async function MakeFileList(ns) {
     code.push(`\tconst repo = "${repository}${branch}/"`)
     code.push(`\tconst files = ${filelist}`)
     code.push('\tfor (const file of files) {')
-    code.push('\t\tlet arg1 = root + file')
+    code.push('\t\tlet arg1 = repo + file')
     code.push('\t\tlet arg2 = file.startsWith("/") ? file : "/" + file')
     code.push('\t\t//ns.tprintf(arg1, arg2)')
     code.push('\t\tawait ns.wget(arg1, arg2)')
