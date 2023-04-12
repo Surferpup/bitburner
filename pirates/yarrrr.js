@@ -423,7 +423,7 @@ export async function main(ns) {
 		// Weaken calculation
 		const weakenEffect = ns.weakenAnalyze(1);
 		const secToDecrease = Math.abs(ns.getServerSecurityLevel(node) - secThresh);
-		const weakenThreads = weakenEffect > 0 ? Math.round(secToDecrease / weakenEffect) : 0;
+		var weakenThreads = weakenEffect > 0 ? Math.round(secToDecrease / weakenEffect) : 0;
 		// Hack calculation
 		var hackEffect = ns.hackAnalyze(node);
 		var hackTaken = hackEffect * curMoney;
