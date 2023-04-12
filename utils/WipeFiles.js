@@ -17,7 +17,7 @@ export async function main(ns) {
         var filelist = getFileList(ns,null,".",null,false)
         ns.tprintf(`Started with ${filelist.length} Files.`)
         for (let filename of filelist) {
-            if (( exclusions.indexOf(filename) >=0 ) && ns.rm("/" + filename))
+            if (( exclusions.indexOf(filename) < 0 ) && ns.rm("/" + filename))
                 ns.tprintf(`Removed ${filename}`)
             else
                 ns.tprintf(`SKIPPED ${filename}`)
